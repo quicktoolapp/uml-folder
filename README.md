@@ -5,59 +5,25 @@
 ### General UML prompt
 
 ```text
-I need a UML diagram for facebook ad sets saving, which involves FE(front-end) BE(back-end)  FB Service(Facebook Service) DB(Data-base) and FB API(Facebook API)
+"I need a UML sequence diagram for a process in a web application involving interactions between various components: Front-End (FE), Back-End (BE), Facebook Service (FB Service), Database (DB), and Facebook API (FB API). Here's the workflow:
 
-with the workflow for:
--  FE calling BE with a bearer-token 
-- BE findind a correcponding facebook-access-token related to this user
-- BE check with "FB Service" saved ad-accounts
- - - for each non saved ad-account it calls FB API to get it ad-comapigns (saves them to DB)
- - - - for each non saved ad-comapign it FB-Sevice Calls FB API (saves them to DB) 
+The Front-End sends a request to the Back-End with a bearer token.
+The Back-End finds the corresponding Facebook access token for the user.
+After parsing the access token, the Back-End requests the Facebook Service to check for saved ad accounts.
+The Facebook Service then loops through each non-saved ad account and performs the following actions:
+Calls the Facebook API to get ad campaigns.
+Saves the ad campaigns to the Database.
+For each non-saved ad campaign, the Facebook Service:
+Calls the Facebook API to get ad sets.
+Saves the ad set details to the Database.
+After completing the ad campaign and ad set retrieval, the Back-End requests the Facebook Service to initiate scraping user data.
+The Facebook Service works with the Facebook API to scrape data and updates the Database accordingly.
+At the end, the Facebook Service returns the scraping progress to the Back-End.
+Please include responses from the Database and Facebook API, indicating success or failure for each action. The diagram should visually represent the sequence of interactions and the flow of data among these components."
 ```
 
-### Updating the UML
+## Diagrams
 
-```text
-I need yoou to update the diagram so  FB API and DB would return a resoponse back to FB Service
+[Facebook ad scrape](./facebook-api-workflow/facebook-ad-scrape.md)
 
-DB return OK on success, Error on failure
-FB API returns a json(serch for corresponding JSON response for GET ad-accounts / ad compaigns / ad-sets) on success, and ERROR JSON on failure(serch for corresponding JSON for it)
-Add an extra step after saving all ad-campaigns:
- --- for each ad-compaign serch for unsaved ad-set, call FB API, then save into DB
-```
-
-```mermaid
-sequenceDiagram
-    actor FE as Front-End
-    participant BE as Back-End
-    participant FBS as Facebook Service
-    participant DB as Database
-    participant FBAPI as Facebook API
-
-    FE->>BE: sends request with bearer-token
-    BE->>BE: find Facebook access token
-    BE->>FBS: request saved ad accounts
-    loop for each non-saved ad account
-        BE->>FBAPI: get ad campaigns
-        FBAPI-->>BE: JSON response
-        BE->>DB: save ad campaigns
-        DB-->>BE: OK / Error
-        loop for each non-saved ad campaign
-            FBS->>FBAPI: call FB API
-            FBAPI-->>FBS: JSON response
-            FBS->>DB: save campaign details
-            DB-->>FBS: OK / Error
-            loop for each unsaved ad set
-                FBS->>FBAPI: get ad sets
-                FBAPI-->>FBS: JSON response
-                FBS->>DB: save ad set details
-                DB-->>FBS: OK / Error
-            end
-        end
-    end
-    DB->>FBS: scraping user data
-    FBS->>FBAPI: work with FB API
-    FBAPI-->>FBS: JSON response
-    FBS->>DB: update data
-    DB-->>FBS: OK / Error
-```
+[Long TTL access-token](./facebook-api-workflow/long-ttl-token.md)
